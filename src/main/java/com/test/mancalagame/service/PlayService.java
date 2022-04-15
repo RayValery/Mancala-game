@@ -4,7 +4,8 @@ import com.test.mancalagame.dal.MancalaRepository;
 import com.test.mancalagame.dal.entity.Game;
 import com.test.mancalagame.dal.entity.Constants;
 import com.test.mancalagame.dal.entity.Pit;
-import com.test.mancalagame.dal.entity.PlayerTurn;
+import com.test.mancalagame.exception.ActionNotAllowedException;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,71 +14,45 @@ public class PlayService {
     @Autowired
     private MancalaRepository mancalaRepository;
 
-    public Game makeMove(Game game, Integer pitId) throws Exception {
-        // No movement on House pits
+    public Game makeMove(String playerId, Game game, Integer pitId) throws Exception {
+        if (!playerId.equals(game.getPlayerForNextMove())) {
+            throw new ActionNotAllowedException("Action is not allowed. Wrong player move.");
+        }
         if (pitId == Constants.rightPitHouseId || pitId == Constants.leftPitHouseId) {
-            return game;
+            throw new ActionNotAllowedException("Action not allowed. House pit selected.");
+        }
+        if (Objects.equals(game.getPlayerForNextMove(), game.getPlayerA()) && pitId > Constants.rightPitHouseId ||
+                Objects.equals(game.getPlayerForNextMove(), game.getPlayerB()) && pitId < Constants.rightPitHouseId) {
+            throw new ActionNotAllowedException("Action not allowed. Wrong pit selected.");     //TODO: Exception handling
         }
 
-        // we set the player turn for the first move of the game based on the pit id
-        if (game.getPlayerTurn() == null) {
-            if (pitId < Constants.rightPitHouseId) {
-                game.setPlayerTurn(PlayerTurn.PlayerA);
-            } else {
-                game.setPlayerTurn(PlayerTurn.PlayerB);
-            }
-        }
-
-        // we need to check if request comes from the right player otherwise we do not move the game. In other words,
-        // we keep the turn for the correct player
-        if (game.getPlayerTurn() == PlayerTurn.PlayerA && pitId > Constants.rightPitHouseId ||
-                game.getPlayerTurn() == PlayerTurn.PlayerB && pitId < Constants.rightPitHouseId) {
-            return game;
-        }
-
-        Pit selectedPit = game.getPit(pitId);
-
+        Pit selectedPit = game.getPit(pitId);  //TODO: fix "throws" section
         int stones = selectedPit.getStones();
-
-        // No movement for empty Pits
         if (stones == Constants.emptyStone) {
-            return game;
+            throw new ActionNotAllowedException("Action not allowed. Empty pit selected.");
         }
-
         selectedPit.setStones(Constants.emptyStone);
 
-        // keep the pit index, used for moving the stones in right pits
         game.setCurrentPitIndex(pitId);
 
-        // simply move all stones except the last one
-        for (int i = 0; i < stones - 1; i++) {
-            moveRight(game,false);
+        for (int i = 0; i < selectedPit.getStones() - 1; i++) {
+            moveRight(game, false);
         }
-
-        // simply move the last stone
-        moveRight(game,true);
+        moveRight(game, true);
 
         int currentPitIndex = game.getCurrentPitIndex();
-
-        // we switch the turn if the last sow was not on any of pit houses (left or right)
         if (currentPitIndex != Constants.rightPitHouseId && currentPitIndex != Constants.leftPitHouseId) {
-            game.setPlayerTurn(nextTurn(game.getPlayerTurn()));
+            changePlayer(game);
         }
-
         //TODO: update game in db - here?
         updateGame(game);
-
         return game;
     }
 
-    // move the game one pit to the right
     private void moveRight(Game game, Boolean lastStone) throws Exception {
         int currentPitIndex = game.getCurrentPitIndex() % Constants.totalPits + 1;
-
-        PlayerTurn playerTurn = game.getPlayerTurn();
-
-        if ((currentPitIndex == Constants.rightPitHouseId && playerTurn == PlayerTurn.PlayerB) ||
-                (currentPitIndex == Constants.leftPitHouseId && playerTurn == PlayerTurn.PlayerA)){
+        if ((currentPitIndex == Constants.rightPitHouseId && Objects.equals(game.getPlayerForNextMove(), game.getPlayerB())) ||
+                (currentPitIndex == Constants.leftPitHouseId && Objects.equals(game.getPlayerForNextMove(), game.getPlayerA()))){
             currentPitIndex = currentPitIndex % Constants.totalPits + 1;
         }
 
@@ -89,12 +64,7 @@ public class PlayService {
             return;
         }
 
-        // It's the last stone and we need to check the opposite player's pit status
         Pit oppositePit = game.getPit(Constants.totalPits - currentPitIndex);
-
-        // we are moving the last stone and the current player's pit is empty but the opposite pit is not empty, therefore,
-        // we collect the opposite's Pit stones plus the last stone and add them to the House Pit of current player and
-        // make the opposite Pit empty
         if (targetPit.isEmpty() && !oppositePit.isEmpty()) {
             Integer oppositeStones = oppositePit.getStones();
             oppositePit.clear();
@@ -103,15 +73,15 @@ public class PlayService {
             pitHouse.addStones(oppositeStones + 1);
             return;
         }
-
         targetPit.addStone();
     }
 
-    public PlayerTurn nextTurn(PlayerTurn currentTurn) {
-        if (currentTurn == PlayerTurn.PlayerA) {
-            return PlayerTurn.PlayerB;
+    public void changePlayer(Game game) {
+        if (game.getPlayerForNextMove().equals(game.getPlayerA())) {
+            game.setPlayerForNextMove(game.getPlayerB());
+            return;
         }
-        return PlayerTurn.PlayerA;
+        game.setPlayerForNextMove(game.getPlayerA());
     }
 
     private Game updateGame(Game game){

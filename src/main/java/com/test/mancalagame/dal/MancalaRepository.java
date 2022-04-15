@@ -1,27 +1,28 @@
 package com.test.mancalagame.dal;
 
 import com.test.mancalagame.dal.entity.Game;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MancalaRepository {        //TODO: use database
 
-    private List<Game> games = new ArrayList<>();
+    private Map<String, Game> gamesByPlayers = new HashMap<>();
 
     public Game addGame(Game game){
-        games.add(game);
+        gamesByPlayers.put(game.getPlayerA(), game);
+        gamesByPlayers.put(game.getPlayerB(), game);
         return game;
     }
 
     public Game updateGame(Game game){
-        int gameIndex = games.indexOf(getGame(game.getId()));
-        game = games.set(gameIndex, game);
+        gamesByPlayers.put(game.getPlayerA(), game);
+        gamesByPlayers.put(game.getPlayerB(), game);
         return game;
     }
 
-    public Game getGame(String gameId){
-        return games.stream().filter(game -> game.getId().equals(gameId)).findFirst().get();    //TODO: check presence
+    public Game getGame(String playerId){
+        return gamesByPlayers.get(playerId);  //TODO: check presence
     }
 }

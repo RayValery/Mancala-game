@@ -15,36 +15,19 @@ public class Game {
 
     private List<Pit> pits;
 
-    private PlayerTurn playerTurn;
+    private String playerA;
+
+    private String playerB;
+
+    private String playerForNextMove;
 
     @JsonIgnore
     private int currentPitIndex;
 
-    public Game() {
-        this (Constants.defaultPitStones);
-    }
-
-    public Game(int pitStones) {                                     //TODO: not needed ? simplify to only 6 stones by default
-        this.pits = Arrays.asList(
-                new Pit(Constants.firstPitPlayerA, pitStones),
-                new Pit(Constants.secondPitPlayerA, pitStones),
-                new Pit(Constants.thirdPitPlayerA, pitStones),
-                new Pit(Constants.forthPitPlayerA, pitStones),
-                new Pit(Constants.fifthPitPlayerA, pitStones),
-                new Pit(Constants.sixthPitPlayerA, pitStones),
-                new PitHouse(Constants.rightPitHouseId),
-                new Pit(Constants.firstPitPlayerB, pitStones),
-                new Pit(Constants.secondPitPlayerB, pitStones),
-                new Pit(Constants.thirdPitPlayerB, pitStones),
-                new Pit(Constants.forthPitPlayerB, pitStones),
-                new Pit(Constants.fifthPitPlayerB, pitStones),
-                new Pit(Constants.sixthPitPlayerB, pitStones),
-                new PitHouse(Constants.leftPitHouseId));
-    }
-
-    public Game(String id, Integer pitStones) {
-        this (pitStones);
-        this.id = id;
+    public Game(String playerA, String playerB){
+        this.setPlayerA(playerA);
+        this.setPlayerB(playerB);
+        this.setPits(initializePits());
     }
 
     // returns the corresponding pit of particular index
@@ -56,4 +39,21 @@ public class Game {
         }
     }
 
+    private List<Pit> initializePits(){             //TODO: looks ugly - remove defaultPitStones from Constants, fix Pit creation
+        return Arrays.asList(
+                new Pit(Constants.firstPitPlayerA, Constants.defaultPitStones),
+                new Pit(Constants.secondPitPlayerA, Constants.defaultPitStones),
+                new Pit(Constants.thirdPitPlayerA, Constants.defaultPitStones),
+                new Pit(Constants.forthPitPlayerA, Constants.defaultPitStones),
+                new Pit(Constants.fifthPitPlayerA, Constants.defaultPitStones),
+                new Pit(Constants.sixthPitPlayerA, Constants.defaultPitStones),
+                new PitHouse(Constants.rightPitHouseId),
+                new Pit(Constants.firstPitPlayerB, Constants.defaultPitStones),
+                new Pit(Constants.secondPitPlayerB, Constants.defaultPitStones),
+                new Pit(Constants.thirdPitPlayerB, Constants.defaultPitStones),
+                new Pit(Constants.forthPitPlayerB, Constants.defaultPitStones),
+                new Pit(Constants.fifthPitPlayerB, Constants.defaultPitStones),
+                new Pit(Constants.sixthPitPlayerB, Constants.defaultPitStones),
+                new PitHouse(Constants.leftPitHouseId));
+    }
 }

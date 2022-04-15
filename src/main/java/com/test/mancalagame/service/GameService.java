@@ -11,14 +11,15 @@ public class GameService {
     @Autowired
     private MancalaRepository mancalaRepository;
 
-    public Game create(){
-        Game game = new Game();
-        game.setId("1");        //TODO: make generation
+    public Game create(String playerA, String playerB){
+        Game game = new Game(playerA, playerB);
+        game.setPlayerForNextMove(playerA);
         game = mancalaRepository.addGame(game);
         return game;
     }
 
-    public Game getGame(String gameId){
-        return mancalaRepository.getGame(gameId);    //TODO: check presence, add exception
+    public Game getGameByPlayerId(String playerId){
+        return mancalaRepository.getGame(playerId);
     }
+
 }
