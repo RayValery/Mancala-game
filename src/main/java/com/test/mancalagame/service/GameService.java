@@ -22,4 +22,23 @@ public class GameService {
         return mancalaRepository.getGame(playerId);
     }
 
+    public Game joinAvailableGame(String playerId){
+        Game availableGame = mancalaRepository.getAvailableToJoinGame();
+        availableGame.setPlayerB(playerId);
+        availableGame = mancalaRepository.updateGame(availableGame);
+        return availableGame;
+    }
+
+//    public Game joinAvailableGameOrCreateNew(String playerId){
+//        Game availableGame = mancalaRepository.getAvailableToJoinGame();
+//        if (availableGame!=null) {
+//            availableGame.setPlayerB(playerId);
+//            availableGame = mancalaRepository.updateGame(availableGame);
+//            return availableGame;
+//        }
+//        Game newGame = new Game(playerId);
+//        newGame.setPlayerForNextMove(playerId);
+//        newGame = mancalaRepository.addGame(newGame);
+//        return newGame;
+//    }
 }

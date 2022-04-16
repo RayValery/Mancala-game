@@ -3,6 +3,7 @@ package com.test.mancalagame.dal.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -29,6 +30,13 @@ public class Game {
         this.setPlayerB(playerB);
         this.setPits(initializePits());
     }
+
+//    public Game(String playerId){
+//        String emptyPlayer = "EMPTY_PLAYER_" + UUID.randomUUID();       //TODO: fix
+//        this.setPlayerA(playerId);
+//        this.setPlayerB(emptyPlayer);       //TODO: fix
+//        this.setPits(initializePits());
+//    }
 
     // returns the corresponding pit of particular index
     public Pit getPit(Integer pitIndex) throws Exception {

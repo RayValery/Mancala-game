@@ -35,7 +35,7 @@ public class PlayService {
 
         game.setCurrentPitIndex(pitId);
 
-        for (int i = 0; i < selectedPit.getStones() - 1; i++) {
+        for (int i = 0; i < stones - 1; i++) {
             moveRight(game, false);
         }
         moveRight(game, true);
