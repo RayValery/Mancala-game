@@ -5,7 +5,7 @@ function renderSuccess(game){
         savePlayerId(game)
     })
     $(".parent").append(newBoardDiv);
-    if(localStorage.getItem("playerForNextMove") !== localStorage.getItem("playerId")){
+    if(localStorage.getItem("currentPlayer") !== localStorage.getItem("playerId")){
         doPoll();
     }
     $(document).ready(function(){
@@ -47,16 +47,20 @@ function renderBoardAfterMove(game){
                 type: "POST",
                 data: "pitId=" + $(this).attr("id"),
                 success: renderBoardAfterMove
+                // error: function(xhr, status, error){
+                //     var errorMessage = xhr.status + ': ' + xhr.message
+                //     alert('Error - ' + errorMessage);
+                // }
             });
         });
     });
-    if(localStorage.getItem("playerForNextMove") !== localStorage.getItem("playerId")){
+    if(localStorage.getItem("currentPlayer") !== localStorage.getItem("playerId")){
         doPoll();
     }
 }
 
 function renderBoard(game) {
-    localStorage.setItem("playerForNextMove", game.playerForNextMove);
+    localStorage.setItem("currentPlayer", game.currentPlayer);
     return "<div class=\"board\">\n" +
         "  <div class=\"section endsection\">\n" +
         "      <div class=\"pot\" id=\"14\">"+game.pits[13].stones+"</div> \n" +

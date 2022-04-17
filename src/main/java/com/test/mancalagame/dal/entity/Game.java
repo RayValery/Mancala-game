@@ -19,7 +19,7 @@ public class Game {
 
     private String playerB;
 
-    private String playerForNextMove;
+    private String currentPlayer;
 
     @JsonIgnore
     private int currentPitIndex;
@@ -29,13 +29,6 @@ public class Game {
         this.setPlayerB(playerB);
         this.setPits(initializePits());
     }
-
-//    public Game(String playerId){
-//        String emptyPlayer = "EMPTY_PLAYER_" + UUID.randomUUID();       //TODO: fix
-//        this.setPlayerA(playerId);
-//        this.setPlayerB(emptyPlayer);       //TODO: fix
-//        this.setPits(initializePits());
-//    }
 
     // returns the corresponding pit of particular index
     public Pit getPit(Integer pitIndex) throws Exception {

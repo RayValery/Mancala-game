@@ -23,7 +23,7 @@ public class GameService {
             return availableGame;
         }
         Game newGame = new Game(playerId, "EMPTY_PLAYER");
-        newGame.setPlayerForNextMove(playerId);
+        newGame.setCurrentPlayer(playerId);
         newGame = mancalaRepository.addGame(newGame);
         return newGame;
     }
