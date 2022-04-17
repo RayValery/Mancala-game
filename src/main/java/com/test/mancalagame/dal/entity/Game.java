@@ -1,6 +1,7 @@
 package com.test.mancalagame.dal.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.test.mancalagame.exception.ActionNotAllowedException;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
@@ -31,11 +32,11 @@ public class Game {
     }
 
     // returns the corresponding pit of particular index
-    public Pit getPit(Integer pitIndex) throws Exception {
+    public Pit getPit(Integer pitIndex) {
         try {
             return this.pits.get(pitIndex-1);
         }catch (Exception e){
-            throw  new Exception("Invalid pitIndex:"+ pitIndex +" has given!");
+            throw new ActionNotAllowedException("Action not allowed. Wrong pit index");
         }
     }
 

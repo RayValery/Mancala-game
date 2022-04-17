@@ -14,7 +14,7 @@ public class PlayService {
     @Autowired
     private MancalaRepository mancalaRepository;
 
-    public Game makeMove(String playerId, Game game, Integer pitId) throws Exception {
+    public Game makeMove(String playerId, Game game, Integer pitId) {
         if (!playerId.equals(game.getCurrentPlayer())) {
             throw new ActionNotAllowedException("Action is not allowed. Wrong player move.");
         }
@@ -47,7 +47,7 @@ public class PlayService {
         return game;
     }
 
-    private void moveRight(Game game, Boolean lastStone) throws Exception {
+    private void moveRight(Game game, Boolean lastStone) {
         int currentPitIndex = game.getCurrentPitIndex() % Constants.totalPits + 1;
         if ((currentPitIndex == Constants.rightPitHouseId && Objects.equals(game.getCurrentPlayer(), game.getPlayerB())) ||
                 (currentPitIndex == Constants.leftPitHouseId && Objects.equals(game.getCurrentPlayer(), game.getPlayerA()))){
@@ -71,7 +71,7 @@ public class PlayService {
         targetPit.addStone();
     }
 
-    private void endGameIfNeeded(Game game) throws Exception {
+    private void endGameIfNeeded(Game game) {
         int totalPlayerA = 0;
         int totalPlayerB = 0;
         for (int i = 1; i < Constants.rightPitHouseId - 1; i++){
