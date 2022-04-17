@@ -3,7 +3,6 @@ package com.test.mancalagame.dal.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
