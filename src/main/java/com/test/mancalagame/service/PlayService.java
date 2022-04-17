@@ -65,7 +65,7 @@ public class PlayService {
         }
 
         Pit oppositePit = game.getPit(Constants.totalPits - currentPitIndex);
-        if (targetPit.isEmpty() && !oppositePit.isEmpty()) {
+        if (targetPit.isEmpty() && !oppositePit.isEmpty() && pitIsOwnedByCurrentPlayer(currentPitIndex, game)) {
             Integer oppositeStones = oppositePit.getStones();
             oppositePit.clear();
             Integer pitHouseIndex = currentPitIndex < Constants.rightPitHouseId ? Constants.rightPitHouseId : Constants.leftPitHouseId;
@@ -82,6 +82,11 @@ public class PlayService {
             return;
         }
         game.setPlayerForNextMove(game.getPlayerA());
+    }
+
+    private Boolean pitIsOwnedByCurrentPlayer(int pitIndex, Game game){
+        return pitIndex < Constants.rightPitHouseId && Objects.equals(game.getPlayerForNextMove(), game.getPlayerA()) ||
+                pitIndex > Constants.rightPitHouseId && Objects.equals(game.getPlayerForNextMove(), game.getPlayerB());
     }
 
     private Game updateGame(Game game){
