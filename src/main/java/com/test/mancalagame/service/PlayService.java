@@ -1,6 +1,6 @@
 package com.test.mancalagame.service;
 
-import com.test.mancalagame.dal.MancalaRepository;
+import com.test.mancalagame.dal.MancalaMongoRepository;
 import com.test.mancalagame.dal.entity.Game;
 import com.test.mancalagame.dal.entity.Constants;
 import com.test.mancalagame.dal.entity.Pit;
@@ -11,8 +11,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PlayService {
+
     @Autowired
-    private MancalaRepository mancalaRepository;
+    private MancalaMongoRepository mancalaMongoRepository;
 
     public Game makeMove(String playerId, Game game, Integer pitId) {
         if (!playerId.equals(game.getCurrentPlayer())) {
@@ -79,7 +80,7 @@ public class PlayService {
         }
         if(totalPlayerA==0){
             for (int i = Constants.rightPitHouseId + 1; i < Constants.leftPitHouseId - 1; i++){
-                totalPlayerB += game.getPit(i).getStones();                  //TODO: duplicate code
+                totalPlayerB += game.getPit(i).getStones();
                 game.getPit(i).clear();
             }
             game.getPit(Constants.leftPitHouseId).addStones(totalPlayerB);
@@ -89,8 +90,9 @@ public class PlayService {
             totalPlayerB += game.getPit(i).getStones();
         }
         if(totalPlayerB==0){
+            totalPlayerA = 0;
             for (int i = 1; i < Constants.rightPitHouseId - 1; i++){
-                totalPlayerA += game.getPit(i).getStones();                  //TODO: duplicate code
+                totalPlayerA += game.getPit(i).getStones();
                 game.getPit(i).clear();
             }
             game.getPit(Constants.rightPitHouseId).addStones(totalPlayerA);
@@ -111,6 +113,6 @@ public class PlayService {
     }
 
     private Game updateGame(Game game){
-        return mancalaRepository.updateGame(game);
+        return mancalaMongoRepository.save(game);
     }
 }
