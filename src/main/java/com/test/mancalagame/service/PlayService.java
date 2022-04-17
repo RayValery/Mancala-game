@@ -24,9 +24,9 @@ public class PlayService {
         }
         if (Objects.equals(game.getCurrentPlayer(), game.getPlayerA()) && pitId > Constants.rightPitHouseId ||
                 Objects.equals(game.getCurrentPlayer(), game.getPlayerB()) && pitId < Constants.rightPitHouseId) {
-            throw new ActionNotAllowedException("Action not allowed. Wrong pit selected.");     //TODO: Exception handling
+            throw new ActionNotAllowedException("Action not allowed. Wrong pit selected.");
         }
-        Pit selectedPit = game.getPit(pitId);  //TODO: fix "throws" section
+        Pit selectedPit = game.getPit(pitId);
         int stones = selectedPit.getStones();
         if (stones == Constants.emptyStone) {
             throw new ActionNotAllowedException("Action not allowed. Empty pit selected.");
@@ -34,37 +34,41 @@ public class PlayService {
         selectedPit.setStones(Constants.emptyStone);
         game.setCurrentPitIndex(pitId);
         for (int i = 0; i < stones - 1; i++) {
-            moveRight(game, false);
+            moveRight(game);
         }
-        moveRight(game, true);
-
-        endGameIfNeeded(game);
-
+        moveLastStone(game);
+        if(isGameEnded(game)) {
+            addRemainingStones(game);
+            return updateGame(game);
+        }
         int currentPitIndex = game.getCurrentPitIndex();
         if (currentPitIndex != Constants.rightPitHouseId && currentPitIndex != Constants.leftPitHouseId) {
             changePlayer(game);
         }
-        game = updateGame(game);       //TODO: update game in db - here?
+        game = updateGame(game);
         return game;
     }
 
-    private void moveRight(Game game, Boolean lastStone) {
-        int currentPitIndex = game.getCurrentPitIndex() % Constants.totalPits + 1;
-        if ((currentPitIndex == Constants.rightPitHouseId && Objects.equals(game.getCurrentPlayer(), game.getPlayerB())) ||
-                (currentPitIndex == Constants.leftPitHouseId && Objects.equals(game.getCurrentPlayer(), game.getPlayerA()))){
-            currentPitIndex = currentPitIndex % Constants.totalPits + 1;
-        }
-        game.setCurrentPitIndex(currentPitIndex);
-        Pit targetPit = game.getPit(currentPitIndex);
-        if (!lastStone || currentPitIndex == Constants.rightPitHouseId || currentPitIndex == Constants.leftPitHouseId) {
+    private void moveRight(Game game) {
+        int targetPitIndex = getTargetPitIndex(game);
+        game.setCurrentPitIndex(targetPitIndex);
+        Pit targetPit = game.getPit(targetPitIndex);
+        targetPit.addStone();
+    }
+
+    private void moveLastStone(Game game){
+        int targetPitIndex = getTargetPitIndex(game);
+        game.setCurrentPitIndex(targetPitIndex);
+        Pit targetPit = game.getPit(targetPitIndex);
+        if (targetPitIndex == Constants.rightPitHouseId || targetPitIndex == Constants.leftPitHouseId) {
             targetPit.addStone();
             return;
         }
-        Pit oppositePit = game.getPit(Constants.totalPits - currentPitIndex);
-        if (targetPit.isEmpty() && !oppositePit.isEmpty() && pitIsOwnedByCurrentPlayer(currentPitIndex, game)) {
+        Pit oppositePit = game.getPit(Constants.totalPits - targetPitIndex);
+        if (targetPit.isEmpty() && !oppositePit.isEmpty() && pitIsOwnedByCurrentPlayer(targetPitIndex, game)) {
             Integer oppositeStones = oppositePit.getStones();
             oppositePit.clear();
-            Integer pitHouseIndex = currentPitIndex < Constants.rightPitHouseId ? Constants.rightPitHouseId : Constants.leftPitHouseId;
+            Integer pitHouseIndex = targetPitIndex < Constants.rightPitHouseId ? Constants.rightPitHouseId : Constants.leftPitHouseId;
             Pit pitHouse = game.getPit(pitHouseIndex);
             pitHouse.addStones(oppositeStones + 1);
             return;
@@ -72,31 +76,43 @@ public class PlayService {
         targetPit.addStone();
     }
 
-    private void endGameIfNeeded(Game game) {
+    private int getTargetPitIndex(Game game) {
+        int targetPitIndex = game.getCurrentPitIndex() % Constants.totalPits + 1;
+        if ((targetPitIndex == Constants.rightPitHouseId && Objects.equals(game.getCurrentPlayer(), game.getPlayerB())) ||
+                (targetPitIndex == Constants.leftPitHouseId && Objects.equals(game.getCurrentPlayer(), game.getPlayerA()))) {
+            targetPitIndex = targetPitIndex % Constants.totalPits + 1;
+        }
+        return targetPitIndex;
+    }
+
+    private Boolean isGameEnded(Game game){
         int totalPlayerA = 0;
-        int totalPlayerB = 0;
-        for (int i = 1; i < Constants.rightPitHouseId - 1; i++){
+        for (int i = 1; i < Constants.rightPitHouseId; i++){
             totalPlayerA += game.getPit(i).getStones();
         }
-        if(totalPlayerA==0){
-            for (int i = Constants.rightPitHouseId + 1; i < Constants.leftPitHouseId - 1; i++){
-                totalPlayerB += game.getPit(i).getStones();
-                game.getPit(i).clear();
-            }
-            game.getPit(Constants.leftPitHouseId).addStones(totalPlayerB);
-            return;
-        }
-        for (int i = Constants.rightPitHouseId + 1; i < Constants.leftPitHouseId - 1; i++){
+
+        int totalPlayerB = 0;
+        for (int i = Constants.rightPitHouseId + 1; i < Constants.leftPitHouseId; i++){
             totalPlayerB += game.getPit(i).getStones();
         }
-        if(totalPlayerB==0){
-            totalPlayerA = 0;
-            for (int i = 1; i < Constants.rightPitHouseId - 1; i++){
-                totalPlayerA += game.getPit(i).getStones();
-                game.getPit(i).clear();
-            }
-            game.getPit(Constants.rightPitHouseId).addStones(totalPlayerA);
+
+        return ( totalPlayerA==0 || totalPlayerB==0);
+    }
+
+    private void addRemainingStones(Game game){
+        int totalPlayerA = 0;
+        for (int i = 1; i < Constants.rightPitHouseId; i++){
+            totalPlayerA += game.getPit(i).getStones();
+            game.getPit(i).clear();
         }
+        game.getPit(Constants.rightPitHouseId).addStones(totalPlayerA);
+
+        int totalPlayerB = 0;
+        for (int i = Constants.rightPitHouseId + 1; i < Constants.leftPitHouseId; i++){
+            totalPlayerB += game.getPit(i).getStones();
+            game.getPit(i).clear();
+        }
+        game.getPit(Constants.leftPitHouseId).addStones(totalPlayerB);
     }
 
     private void changePlayer(Game game) {
