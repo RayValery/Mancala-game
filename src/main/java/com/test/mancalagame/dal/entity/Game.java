@@ -5,11 +5,13 @@ import com.test.mancalagame.exception.ActionNotAllowedException;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "games")
 @Data
+@NoArgsConstructor
 public class Game {
     @Id
     private String id;
@@ -31,7 +33,6 @@ public class Game {
         this.setPits(initializePits());
     }
 
-    // returns the corresponding pit of particular index
     public Pit getPit(Integer pitIndex) {
         try {
             return this.pits.get(pitIndex-1);
@@ -40,21 +41,21 @@ public class Game {
         }
     }
 
-    private List<Pit> initializePits(){             //TODO: looks ugly - remove defaultPitStones from Constants, fix Pit creation
+    private List<Pit> initializePits(){
         return Arrays.asList(
-                new Pit(Constants.firstPitPlayerA, Constants.defaultPitStones),
-                new Pit(Constants.secondPitPlayerA, Constants.defaultPitStones),
-                new Pit(Constants.thirdPitPlayerA, Constants.defaultPitStones),
-                new Pit(Constants.forthPitPlayerA, Constants.defaultPitStones),
-                new Pit(Constants.fifthPitPlayerA, Constants.defaultPitStones),
-                new Pit(Constants.sixthPitPlayerA, Constants.defaultPitStones),
+                new Pit(Constants.firstPitPlayerA),
+                new Pit(Constants.secondPitPlayerA),
+                new Pit(Constants.thirdPitPlayerA),
+                new Pit(Constants.forthPitPlayerA),
+                new Pit(Constants.fifthPitPlayerA),
+                new Pit(Constants.sixthPitPlayerA),
                 new PitHouse(Constants.rightPitHouseId),
-                new Pit(Constants.firstPitPlayerB, Constants.defaultPitStones),
-                new Pit(Constants.secondPitPlayerB, Constants.defaultPitStones),
-                new Pit(Constants.thirdPitPlayerB, Constants.defaultPitStones),
-                new Pit(Constants.forthPitPlayerB, Constants.defaultPitStones),
-                new Pit(Constants.fifthPitPlayerB, Constants.defaultPitStones),
-                new Pit(Constants.sixthPitPlayerB, Constants.defaultPitStones),
+                new Pit(Constants.firstPitPlayerB),
+                new Pit(Constants.secondPitPlayerB),
+                new Pit(Constants.thirdPitPlayerB),
+                new Pit(Constants.forthPitPlayerB),
+                new Pit(Constants.fifthPitPlayerB),
+                new Pit(Constants.sixthPitPlayerB),
                 new PitHouse(Constants.leftPitHouseId));
     }
 }

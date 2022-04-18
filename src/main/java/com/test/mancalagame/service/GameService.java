@@ -1,31 +1,46 @@
 package com.test.mancalagame.service;
 
 import com.test.mancalagame.dal.MancalaMongoRepository;
-import com.test.mancalagame.dal.MancalaRepository;
 import com.test.mancalagame.dal.entity.Game;
+import com.test.mancalagame.exception.ActionNotAllowedException;
+import com.test.mancalagame.exception.NoAvailableGameException;
+import com.test.mancalagame.model.GameModel;
+import com.test.mancalagame.model.mapper.GameMapper;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GameService {
 
+    private static final String EMPTY_PLAYER = "EMPTY_PLAYER";
+
     @Autowired
     private MancalaMongoRepository mancalaMongoRepository;
 
-    public Game getGameByPlayerId(String playerId){
-        return mancalaMongoRepository.getGameByPlayerId(playerId);     //TODO: check presence
+    @Autowired
+    private GameMapper gameMapper;
+
+    public GameModel getGameByPlayerId(String playerId){
+        if (playerId==null) {
+            throw new ActionNotAllowedException("Player is not identified.");
+        }
+        Game game = mancalaMongoRepository.getGameByPlayerId(playerId).orElseThrow(() ->
+                new NoAvailableGameException("No game found for player " + playerId));
+        return gameMapper.mapModel(game);
     }
 
-    public Game joinAvailableGameOrCreateNew(String playerId){
-        Game availableGame = mancalaMongoRepository.getGameByPlayerId("EMPTY_PLAYER");      //TODO: const
-        if (availableGame!=null) {
-            availableGame.setPlayerB(playerId);
-            availableGame = mancalaMongoRepository.save(availableGame);
-            return availableGame;
+    public GameModel joinGame(String playerId){
+        Optional<Game> availableGame = mancalaMongoRepository.getGameByPlayerId(EMPTY_PLAYER);
+        if (availableGame.isPresent()) {
+            Game game = availableGame.get();
+            game.setPlayerB(playerId);
+            game = mancalaMongoRepository.save(game);
+            return gameMapper.mapModel(game);
         }
-        Game newGame = new Game(playerId, "EMPTY_PLAYER");
+        Game newGame = new Game(playerId, EMPTY_PLAYER);
         newGame.setCurrentPlayer(playerId);
         newGame = mancalaMongoRepository.insert(newGame);
-        return newGame;
+        return gameMapper.mapModel(newGame);
     }
 }

@@ -12,7 +12,7 @@ function renderSuccess(game){
         $(".pot").click(function(){
             $.ajax({
                 url: "http://localhost:8080/mancala/move",
-                type: "POST",
+                type: "PUT",
                 data: "pitId=" + $(this).attr("id"),
                 success: renderBoardAfterMove
             });
@@ -44,13 +44,9 @@ function renderBoardAfterMove(game){
         $(".pot").click(function(){
             $.ajax({
                 url: "http://localhost:8080/mancala/move",
-                type: "POST",
+                type: "PUT",
                 data: "pitId=" + $(this).attr("id"),
                 success: renderBoardAfterMove
-                // error: function(xhr, status, error){
-                //     var errorMessage = xhr.status + ': ' + xhr.message
-                //     alert('Error - ' + errorMessage);
-                // }
             });
         });
     });

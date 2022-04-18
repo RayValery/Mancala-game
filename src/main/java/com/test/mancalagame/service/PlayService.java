@@ -5,6 +5,8 @@ import com.test.mancalagame.dal.entity.Game;
 import com.test.mancalagame.dal.entity.Constants;
 import com.test.mancalagame.dal.entity.Pit;
 import com.test.mancalagame.exception.ActionNotAllowedException;
+import com.test.mancalagame.model.GameModel;
+import com.test.mancalagame.model.mapper.GameMapper;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,11 @@ public class PlayService {
     @Autowired
     private MancalaMongoRepository mancalaMongoRepository;
 
-    public Game makeMove(String playerId, Game game, Integer pitId) {
+    @Autowired
+    private GameMapper gameMapper;
+
+    public GameModel makeMove(String playerId, GameModel gameModel, Integer pitId) {
+        Game game = gameMapper.mapEntity(gameModel);
         if (!playerId.equals(game.getCurrentPlayer())) {
             throw new ActionNotAllowedException("Action is not allowed. Wrong player move.");
         }
@@ -28,25 +34,26 @@ public class PlayService {
         }
         Pit selectedPit = game.getPit(pitId);
         int stones = selectedPit.getStones();
-        if (stones == Constants.emptyStone) {
+        if (stones == 0) {
             throw new ActionNotAllowedException("Action not allowed. Empty pit selected.");
         }
-        selectedPit.setStones(Constants.emptyStone);
+        selectedPit.clear();
         game.setCurrentPitIndex(pitId);
         for (int i = 0; i < stones - 1; i++) {
             moveRight(game);
         }
         moveLastStone(game);
-        if(isGameEnded(game)) {
+        if (isGameEnded(game)) {
             addRemainingStones(game);
-            return updateGame(game);
+            game = updateGame(game);
+            return gameMapper.mapModel(game);
         }
         int currentPitIndex = game.getCurrentPitIndex();
         if (currentPitIndex != Constants.rightPitHouseId && currentPitIndex != Constants.leftPitHouseId) {
             changePlayer(game);
         }
         game = updateGame(game);
-        return game;
+        return gameMapper.mapModel(game);
     }
 
     private void moveRight(Game game) {

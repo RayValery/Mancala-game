@@ -3,10 +3,9 @@ package com.test.mancalagame.dal.entity;
 public class Constants {
     public static final int leftPitHouseId = 14;
     public static final int totalPits = 14;
-    public static final int rightPitHouseId = 7;
-    public static final int emptyStone = 0;
-
     public static final int defaultPitStones = 6;
+    public static final int rightPitHouseId = 7;
+
     public static final int firstPitPlayerA = 1;
     public static final int secondPitPlayerA = 2;
     public static final int thirdPitPlayerA = 3;

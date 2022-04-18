@@ -6,11 +6,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Pit {
     private Integer id;
+
     private Integer stones;
+
+    public Pit(Integer id) {
+        this.id = id;
+        this.stones = Constants.defaultPitStones;
+    }
 
     @JsonIgnore
     public Boolean isEmpty (){
