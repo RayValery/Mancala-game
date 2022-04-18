@@ -1,6 +1,5 @@
 package com.test.mancalagame.controller;
 
-import com.test.mancalagame.dal.entity.Game;
 import com.test.mancalagame.model.GameModel;
 import com.test.mancalagame.service.GameService;
 import com.test.mancalagame.service.PlayService;
