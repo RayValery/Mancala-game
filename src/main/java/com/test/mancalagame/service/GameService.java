@@ -7,22 +7,20 @@ import com.test.mancalagame.exception.NoAvailableGameException;
 import com.test.mancalagame.model.GameModel;
 import com.test.mancalagame.model.mapper.GameMapper;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class GameService {
 
     private static final String EMPTY_PLAYER = "EMPTY_PLAYER";
 
-    @Autowired
-    private MancalaMongoRepository mancalaMongoRepository;
+    private final MancalaMongoRepository mancalaMongoRepository;
+    private final GameMapper gameMapper;
 
-    @Autowired
-    private GameMapper gameMapper;
-
-    public GameModel getGameByPlayerId(String playerId){
-        if (playerId==null) {
+    public GameModel getGameByPlayerId(String playerId) {
+        if (playerId == null) {
             throw new ActionNotAllowedException("Player is not identified.");
         }
         Game game = mancalaMongoRepository.getGameByPlayerId(playerId).orElseThrow(() ->
@@ -30,7 +28,7 @@ public class GameService {
         return gameMapper.mapModel(game);
     }
 
-    public GameModel joinGame(String playerId){
+    public GameModel joinGame(String playerId) {
         Optional<Game> availableGame = mancalaMongoRepository.getGameByPlayerId(EMPTY_PLAYER);
         if (availableGame.isPresent()) {
             Game game = availableGame.get();

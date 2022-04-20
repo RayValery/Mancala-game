@@ -6,13 +6,14 @@ import com.test.mancalagame.model.GameModel;
 import com.test.mancalagame.model.PitModel;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class GameMapper {
-    @Autowired
-    private PitMapper pitMapper;
+
+    private final PitMapper pitMapper;
 
     public GameModel mapModel(Game entity) {
         GameModel model = new GameModel();

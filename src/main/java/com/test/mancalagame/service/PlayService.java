@@ -8,17 +8,15 @@ import com.test.mancalagame.exception.ActionNotAllowedException;
 import com.test.mancalagame.model.GameModel;
 import com.test.mancalagame.model.mapper.GameMapper;
 import java.util.Objects;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class PlayService {
 
-    @Autowired
-    private MancalaMongoRepository mancalaMongoRepository;
-
-    @Autowired
-    private GameMapper gameMapper;
+    private final MancalaMongoRepository mancalaMongoRepository;
+    private final GameMapper gameMapper;
 
     public GameModel makeMove(String playerId, GameModel gameModel, Integer pitId) {
         Game game = gameMapper.mapEntity(gameModel);

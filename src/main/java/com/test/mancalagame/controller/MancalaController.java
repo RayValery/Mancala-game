@@ -5,7 +5,7 @@ import com.test.mancalagame.service.GameService;
 import com.test.mancalagame.service.PlayService;
 import java.util.UUID;
 import javax.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,12 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/mancala")
+@RequiredArgsConstructor
 public class MancalaController {
-    @Autowired
-    private GameService gameService;
 
-    @Autowired
-    private PlayService playService;
+    private final GameService gameService;
+    private final PlayService playService;
 
     @PostMapping("/join")
     public ResponseEntity<GameModel> joinGame(HttpSession httpSession) {
