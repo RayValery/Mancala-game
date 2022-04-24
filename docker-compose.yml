@@ -1,0 +1,12 @@
+version: "3"
+services:
+  mancala_db:
+    image: mongo:4.4.2
+    ports:
+      - 27017:27017
+  mancala-game:
+    image: mancala-game
+    ports:
+      - 8080:8080
+    links:
+      - mancala_db
